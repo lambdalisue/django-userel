@@ -45,7 +45,8 @@ class UserelField(models.ForeignKey):
         if self.auto_now or (self.auto_now_add and add):
             value = self._backend.get_user()
             if isinstance(value, self.rel.to):
-                setattr(model_instance, self.attname, value.pk)
-                return value.pk
+                if self.auto_now or not getattr(model_instance, self.attname, None):
+                    setattr(model_instance, self.attname, value.pk)
+                    return value.pk
         # Non auto_now/auto_now_add or anonymous user is working
         return super(UserelField, self).pre_save(model_instance, add)
